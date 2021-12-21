@@ -1,6 +1,20 @@
 name: Create terraform plan
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      Environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'test'
+      App_version:
+        description: 'App version'
+        required: true
+        default: '0.0.2'
+      repo_jfrog:
+        description: 'repo jfrog'
+        required: true
+        default: 'snapshot'
 jobs:
   check-pr:
     runs-on: ubuntu-latest
@@ -20,6 +34,14 @@ jobs:
       - name: terraform plan
         id: plan
         uses: dflook/terraform-plan@v1
+        with:
+          variables: |
+            artifactory_url="https://sekhmet.jfrog.io/"
+            artifactory_username="${{ secrets.JFROG_USER }}"
+            artifactory_password="${{ secrets.JFROG_PASSWORD }}"
+            artifactory_repo="sekhmet-api-libs-${{ github.event.inputs.repo_jfrog }}"
+            app_version="${{ github.event.inputs.App_version }}"
+            environment_suffix="${{ github.event.inputs.Environment }}"
         continue-on-error: true
 
       - name: Update Pull Request
