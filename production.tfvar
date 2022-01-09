@@ -1,6 +1,0 @@
-artifactory_url="https://sekhmet.jfrog.io/"
-artifactory_username="upload-user"
-artifactory_password=""
-artifactory_repo="sekhmet-api-libs-release"
-app_version="0.0.2"
-environment_suffix="prod"

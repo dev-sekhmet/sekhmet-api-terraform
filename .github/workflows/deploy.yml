@@ -44,8 +44,15 @@ jobs:
             artifactory_username="${{ secrets.JFROG_USER }}"
             artifactory_password="${{ secrets.JFROG_PASSWORD }}"
             artifactory_repo="sekhmet-api-libs-${{ github.event.inputs.repo_jfrog }}"
+
             app_version="${{ github.event.inputs.App_version }}"
             environment_suffix="${{ github.event.inputs.Environment }}"
+
+            app_env_SERVER_PORT="${{ secrets.SERVER_PORT }}"
+            app_env_SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}"
+            app_env_SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}"
+            app_env_SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}"
+            app_env_SPRING_ELASTICSEARCH_REST_URIS="${{ secrets.SPRING_ELASTICSEARCH_REST_URIS }}"
         continue-on-error: true
 
       - name: Update Pull Request

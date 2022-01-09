@@ -12,8 +12,13 @@ data "artifactory_file" "jar" {
 }
 
 resource "aws_s3_bucket" "s3_bucket_sekhmet" {
-    bucket = "deployment-artifact-${var.environment_suffix}"
+    bucket = "sekhmet-content-${var.environment_suffix}"
     acl = "private"
+    force_destroy = true
+    tags = {
+        Name        = "Name"
+        Environment = "Sekhmet_Chat_File"
+    }
 }
 
 resource "aws_s3_bucket_object" "s3_bucket_object_sekhmet-app" {
@@ -26,24 +31,59 @@ resource "aws_elastic_beanstalk_application" "beanstalk_app" {
     name = "sekhmet-api"
 }
 
-resource "aws_elastic_beanstalk_application_version" "beanstalk_myapp_version" {
+resource "aws_elastic_beanstalk_application_version" "beanstalk_app_version" {
     application = aws_elastic_beanstalk_application.beanstalk_app.name
     bucket = aws_s3_bucket.s3_bucket_sekhmet.id
     key = aws_s3_bucket_object.s3_bucket_object_sekhmet-app.id
     name = "v${var.app_version}"
 }
 
-
 resource "aws_elastic_beanstalk_environment" "beanstalk_sekhmet_env" {
     name = "app-${var.environment_suffix}"
     application = aws_elastic_beanstalk_application.beanstalk_app.name
     solution_stack_name = "64bit Amazon Linux 2 v3.2.9 running Corretto 11"
-    version_label = aws_elastic_beanstalk_application_version.beanstalk_myapp_version.name
+    version_label = aws_elastic_beanstalk_application_version.beanstalk_app_version.name
 
     setting {
         name = "SERVER_PORT"
         namespace = "aws:elasticbeanstalk:application:environment"
-        value = "5000"
+        value = var.app_env_SERVER_PORT
+    }
+    setting {
+        name = "SPRING_DATASOURCE_URL"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_SPRING_DATASOURCE_URL
+    }
+    setting {
+        name = "SPRING_DATASOURCE_USERNAME"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_SPRING_DATASOURCE_USERNAME
+    }
+    setting {
+        name = "SPRING_DATASOURCE_PASSWORD"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_SPRING_DATASOURCE_PASSWORD
+    }
+    setting {
+        name = "SPRING_ELASTICSEARCH_REST_URIS"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_SPRING_ELASTICSEARCH_REST_URIS
+    }
+    setting {
+        name = "APPLICATION_S3_REGION"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = "eu-west-3"
+    }
+    setting {
+        name = "APPLICATION_S3_BUCKET"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = aws_s3_bucket.s3_bucket_sekhmet.bucket
+    }
+
+    setting {
+        name = "APPLICATION_S3_ENDPOINT"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = "https://s3.eu-west-3.amazonaws.com"
     }
 
     setting {
