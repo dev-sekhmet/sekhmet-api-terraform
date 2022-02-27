@@ -41,7 +41,7 @@ resource "aws_elastic_beanstalk_application_version" "beanstalk_app_version" {
 resource "aws_elastic_beanstalk_environment" "beanstalk_sekhmet_env" {
     name = "app-${var.environment_suffix}"
     application = aws_elastic_beanstalk_application.beanstalk_app.name
-    solution_stack_name = "64bit Amazon Linux 2 v3.2.9 running Corretto 11"
+    solution_stack_name = "64bit Amazon Linux 2 v3.2.11 running Corretto 11"
     version_label = aws_elastic_beanstalk_application_version.beanstalk_app_version.name
 
     setting {
@@ -84,6 +84,44 @@ resource "aws_elastic_beanstalk_environment" "beanstalk_sekhmet_env" {
         name = "APPLICATION_S3_ENDPOINT"
         namespace = "aws:elasticbeanstalk:application:environment"
         value = "https://s3.eu-west-3.amazonaws.com"
+    }
+
+    setting {
+        name = "APPLICATION_SMS_TWILIO_ACCOUNT_SID"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_APPLICATION_SMS_TWILIO_ACCOUNT_SID
+    }
+    setting {
+        name = "APPLICATION_SMS_TWILIO_AUTH_TOKEN"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_APPLICATION_SMS_TWILIO_AUTH_TOKEN
+    }
+
+    setting {
+        name = "APPLICATION_SMS_PASSWORD_PHONE_NUMBER_SECRET"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_APPLICATION_SMS_PASSWORD_PHONE_NUMBER_SECRET
+    }
+    setting {
+        name = "APPLICATION_SMS_TWILIO_VERIFY_SID"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_APPLICATION_SMS_TWILIO_VERIFY_SID
+    }
+    setting {
+        name = "APPLICATION_SMS_TWILIO_CONVERSATION_SID"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_APPLICATION_SMS_TWILIO_CONVERSATION_SID
+    }
+
+    setting {
+        name = "APPLICATION_SMS_TWILIO_API_SID"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_APPLICATION_SMS_TWILIO_API_SID
+    }
+    setting {
+        name = "APPLICATION_SMS_TWILIO_API_SECRET"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_APPLICATION_SMS_TWILIO_API_SECRET
     }
 
     setting {
