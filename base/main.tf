@@ -9,19 +9,23 @@ data "artifactory_file" "jar" {
     repository  = var.artifactory_repo
     path        = "com/sekhmet/sekhmetapi/sekhmet-api/${var.app_version}/sekhmet-api-${var.app_version}.jar"
     output_path = "artifact.jar"
+    force_overwrite = true
 }
 
 resource "aws_s3_bucket" "s3_bucket_sekhmet" {
-    bucket = "sekhmet-content-${var.environment_suffix}"
-    acl = "private"
+    bucket = "sekhmet-content-${var.environment_cname}"
     force_destroy = true
     tags = {
         Name        = "Name"
         Environment = "Sekhmet_Chat_File"
     }
 }
+resource "aws_s3_bucket_acl" "s3_bucket_sekhmet_acl" {
+    bucket = aws_s3_bucket.s3_bucket_sekhmet.id
+    acl    = "private"
+}
 
-resource "aws_s3_bucket_object" "s3_bucket_object_sekhmet-app" {
+resource "aws_s3_object" "s3_bucket_object_sekhmet-app" {
     bucket = aws_s3_bucket.s3_bucket_sekhmet.id
     key = "beanstalk/sekhmet-app"
     source = data.artifactory_file.jar.output_path
@@ -34,15 +38,16 @@ resource "aws_elastic_beanstalk_application" "beanstalk_app" {
 resource "aws_elastic_beanstalk_application_version" "beanstalk_app_version" {
     application = aws_elastic_beanstalk_application.beanstalk_app.name
     bucket = aws_s3_bucket.s3_bucket_sekhmet.id
-    key = aws_s3_bucket_object.s3_bucket_object_sekhmet-app.id
+    key = aws_s3_object.s3_bucket_object_sekhmet-app.id
     name = "v${var.app_version}"
 }
 
 resource "aws_elastic_beanstalk_environment" "beanstalk_sekhmet_env" {
-    name = "app-${var.environment_suffix}"
+    name = "app-${var.environment_cname}"
     application = aws_elastic_beanstalk_application.beanstalk_app.name
-    solution_stack_name = "64bit Amazon Linux 2 v3.2.11 running Corretto 11"
+    solution_stack_name = "64bit Amazon Linux 2 v3.4.1 running Corretto 11"
     version_label = aws_elastic_beanstalk_application_version.beanstalk_app_version.name
+    cname_prefix = "${var.environment_cname}"
 
     setting {
         name = "SERVER_PORT"
@@ -122,6 +127,17 @@ resource "aws_elastic_beanstalk_environment" "beanstalk_sekhmet_env" {
         name = "APPLICATION_SMS_TWILIO_API_SECRET"
         namespace = "aws:elasticbeanstalk:application:environment"
         value = var.app_env_APPLICATION_SMS_TWILIO_API_SECRET
+    }
+
+    setting {
+        name = "APPLICATION_SMS_TWILIO_CHANNEL_USER_SID"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_APPLICATION_SMS_TWILIO_CHANNEL_USER_SID
+    }
+    setting {
+        name = "APPLICATION_SMS_TWILIO_CHANNEL_ADMIN_SID"
+        namespace = "aws:elasticbeanstalk:application:environment"
+        value = var.app_env_APPLICATION_SMS_TWILIO_CHANNEL_ADMIN_SID
     }
 
     setting {
