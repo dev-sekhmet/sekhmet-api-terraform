@@ -8,7 +8,7 @@ provider "artifactory" {
 data "artifactory_file" "jar" {
     repository  = var.artifactory_repo
     path        = "com/sekhmet/sekhmetapi/sekhmet-api/${var.app_version}/sekhmet-api-${var.app_version}.jar"
-    output_path = "artifact.jar"
+    output_path = "artifact-${var.app_version}.jar"
     force_overwrite = true
 }
 
@@ -150,5 +150,10 @@ resource "aws_elastic_beanstalk_environment" "beanstalk_sekhmet_env" {
         namespace = "aws:autoscaling:launchconfiguration"
         name = "IamInstanceProfile"
         value = "aws-elasticbeanstalk-ec2-role"
+    }
+    setting {
+        namespace = "aws:autoscaling:launchconfiguration"
+        name = "EC2KeyName"
+        value = "ebs"
     }
 }
