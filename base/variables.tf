@@ -1,3 +1,7 @@
+variable name {
+    type = string
+    description = "name of environment"
+}
 variable artifactory_url {
     type = string
 }
@@ -16,7 +20,7 @@ variable app_version {
     type = string
 }
 
-variable environment_suffix {
+variable environment_cname {
     type = string
 }
 variable app_env_SERVER_PORT {
@@ -55,6 +59,12 @@ variable app_env_APPLICATION_SMS_TWILIO_CONVERSATION_SID {
     type = string
 }
 variable app_env_APPLICATION_SMS_TWILIO_API_SID {
+    type = string
+}
+variable app_env_APPLICATION_SMS_TWILIO_CHANNEL_USER_SID {
+    type = string
+}
+variable app_env_APPLICATION_SMS_TWILIO_CHANNEL_ADMIN_SID {
     type = string
 }
 
